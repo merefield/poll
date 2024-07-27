@@ -29,11 +29,7 @@ export default class PollComponent extends Component {
   @service router;
   @service modal;
   @tracked isStaff = this.currentUser && this.currentUser.staff;
-  @tracked
-  showResults =
-    this.args.hasSavedVote ||
-    (this.args.topicArchived && !this.args.staffOnly) ||
-    (this.args.closed && !this.args.staffOnly);
+
   isMe = this.currentUser && this.args.post?.user_id === this.currentUser.id;
 
   checkUserGroups = (user, poll) => {
@@ -70,40 +66,19 @@ export default class PollComponent extends Component {
   };
 
   @action
-  async castVotes(option) {
-    let success = false;
+  castVotes(option) {
     if (!this.currentUser) {
       return;
     }
-    await this.args.castVotes(option).then(() => {
-      success = true;
-    });
-    if (success) {
-      if (this.args.poll.results !== "on_close") {
-        this.showResults = true;
-      }
-      if (this.args.poll.results === "staff_only") {
-        if (this.currentUser && this.currentUser.staff) {
-          this.showResults = true;
-        } else {
-          this.showResults = false;
-        }
-      }
-    }
+    this.args.castVotes(option);
   }
 
   @action
-  async removeVote() {
-    let success = false;
+  removeVote() {
     if (!this.currentUser) {
       return;
     }
-    await this.args.removeVote().then(() => {
-      success = true;
-    });
-    if (success) {
-      this.showResults = false;
-    }
+    this.args.removeVote();
   }
 
   get min() {
@@ -136,8 +111,7 @@ export default class PollComponent extends Component {
 
   @action
   toggleResults() {
-    const showResults = !this.showResults;
-    this.showResults = showResults;
+    this.args.toggleResults();
   }
 
   @action
@@ -206,7 +180,8 @@ export default class PollComponent extends Component {
 
   get showCastVotesButton() {
     return (
-      (this.args.isMultiple || this.args.isRankedChoice) && !this.showResults
+      (this.args.isMultiple || this.args.isRankedChoice) &&
+      !this.args.showResults
     );
   }
 
@@ -225,12 +200,12 @@ export default class PollComponent extends Component {
   }
 
   get showHideResultsButton() {
-    return this.showResults && !this.hideResultsDisabled;
+    return this.args.showResults && !this.hideResultsDisabled;
   }
 
   get showShowResultsButton() {
     return (
-      !this.showResults &&
+      !this.args.showResults &&
       !this.hideResultsDisabled &&
       !(
         this.args.poll.results === ON_VOTE &&
@@ -245,7 +220,7 @@ export default class PollComponent extends Component {
 
   get showRemoveVoteButton() {
     return (
-      !this.showResults &&
+      !this.args.showResults &&
       !this.args.closed &&
       !this.hideResultsDisabled &&
       this.args.hasSavedVote
@@ -275,7 +250,6 @@ export default class PollComponent extends Component {
     const totalScore = this.args.options.reduce((total, o) => {
       return total + parseInt(o.html, 10) * parseInt(o.votes, 10);
     }, 0);
-
     const average =
       this.args.voters === 0 ? 0 : round(totalScore / this.args.voters, -2);
 
@@ -288,16 +262,8 @@ export default class PollComponent extends Component {
   }
 
   @action
-  async toggleStatus() {
-    let status;
-    status = await this.args.toggleStatus();
-
-    if (
-      this.state.poll.results === "on_close" ||
-      this.state.poll.results === "always"
-    ) {
-      this.showResults = status === "closed";
-    }
+  toggleStatus() {
+    this.args.toggleStatus();
   }
 
   @action
@@ -357,7 +323,7 @@ export default class PollComponent extends Component {
       {{#if this.notInVotingGroup}}
         <div class="alert alert-danger">{{this.pollGroups}}</div>
       {{/if}}
-      {{#if this.showResults}}
+      {{#if @showResults}}
         <div class={{this.resultsWidgetTypeClass}}>
           {{#if @isNumber}}
             <span>{{this.averageRating}}</span>
@@ -400,7 +366,7 @@ export default class PollComponent extends Component {
       @close={{@close}}
       @closed={{@closed}}
       @results={{@poll.results}}
-      @showResults={{this.showResults}}
+      @showResults={{@showResults}}
       @postUserId={{@poll.post.user_id}}
       @isPublic={{@poll.public}}
       @hasVoted={{this.hasVoted}}
