@@ -48,6 +48,7 @@ export default class PollResultsStandardComponent extends Component {
         ? this.args.voters[option.id]?.loading || false
         : false;
     });
+
     return ordered;
   };
 
