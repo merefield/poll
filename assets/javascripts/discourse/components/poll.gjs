@@ -401,12 +401,12 @@ export default class PollComponent extends Component {
   }
 
   get showHideResultsButton() {
-    return this.args.showResults && !this.hideResultsDisabled;
+    return this.showResults && !this.hideResultsDisabled;
   }
 
   get showShowResultsButton() {
     return (
-      !this.args.showResults &&
+      !this.showResults &&
       !this.hideResultsDisabled &&
       !(this.poll.results === ON_VOTE && !this.hasSavedVote && !this.isMe) &&
       !(this.poll.results === ON_CLOSE && !this.closed) &&
@@ -650,7 +650,7 @@ export default class PollComponent extends Component {
       {{#if this.notInVotingGroup}}
         <div class="alert alert-danger">{{this.pollGroups}}</div>
       {{/if}}
-      {{#if @showResults}}
+      {{#if this.showResults}}
         <div class={{this.resultsWidgetTypeClass}}>
           {{#if this.isNumber}}
             <span>{{this.averageRating}}</span>

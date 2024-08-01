@@ -25,7 +25,7 @@ export default createWidget("discourse-poll", {
       new RenderGlimmer(
         this,
         "div.poll",
-        hbs`<Poll @attrs={{@data.attrs}} @preloadedVoters={{@data.preloadedVoters}} />`,
+        hbs`<Poll @attrs={{@data.attrs}} @preloadedVoters={{@data.preloadedVoters}} @options={{@data.options}} />`,
         {
           attrs,
           preloadedVoters: attrs.poll.preloaded_voters,
