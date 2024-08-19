@@ -203,7 +203,7 @@ class DiscoursePoll::Poll
   end
 
   def self.serialized_voters(poll, opts = {})
-    limit = (opts["limit"] || 2).to_i
+    limit = (opts["limit"] || 25).to_i
     limit = 0 if limit < 0
     limit = 50 if limit > 50
 

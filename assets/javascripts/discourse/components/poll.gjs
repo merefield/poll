@@ -23,7 +23,7 @@ import PollOptions from "../components/poll-options";
 import PollResultsPie from "../components/poll-results-pie";
 import PollResultsTabs from "../components/poll-results-tabs";
 
-const FETCH_VOTERS_COUNT = 2;
+const FETCH_VOTERS_COUNT = 25;
 const STAFF_ONLY = "staff_only";
 const MULTIPLE = "multiple";
 const NUMBER = "number";
