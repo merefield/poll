@@ -28,6 +28,7 @@ en:
         tabs:
           votes: "Votes"
           outcome: "Outcome"
+          sankey: "Sankey"
       multiple:
         help:
           at_least_min_options:
@@ -113,6 +114,8 @@ en:
         label: "Options"
         ranked_choice:
           abstain: "Abstain"
+          highest_priority: "(highest priority)"
+          lowest_priority: "(lowest priority)"
           login: "Login to vote!"
 
       error_while_toggling_status: "Sorry, there was an error toggling the status of this poll."

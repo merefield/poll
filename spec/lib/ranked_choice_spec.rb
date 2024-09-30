@@ -27,6 +27,16 @@ RSpec.describe DiscoursePoll::RankedChoice do
     ]
   end
 
+  let(:options_5) do
+    [
+      { id: "A", html: "A" },
+      { id: "B", html: "B" },
+      { id: "C", html: "C" },
+      { id: "D", html: "D" },
+      { id: "E", html: "E" },
+    ]
+  end
+
   it "correctly finds the winner with a simple majority" do
     votes = [%w[Alice Bob], %w[Bob Alice], %w[Alice Bob], %w[Bob Alice], %w[Alice Bob]]
     expect(described_class.run(votes, options_1)[:winning_candidate]).to eq(
@@ -80,7 +90,7 @@ RSpec.describe DiscoursePoll::RankedChoice do
     )
   end
 
-  it "handles a complex multi-round tie" do
+  it "handles a complex multi-round tie and provides correct sankey data" do
     votes = [
       %w[Belle-lettres Thriller Non-fiction Sci-fi Mystery Comedy Historical Fantasy],
       %w[Mystery Fantasy Belle-lettres Sci-fi Non-fiction Historical Thriller Comedy],
@@ -106,5 +116,37 @@ RSpec.describe DiscoursePoll::RankedChoice do
       [{ digest: "Mystery", html: "Mystery" }, { digest: "Fantasy", html: "Fantasy" }],
     )
     expect(outcome[:round_activity].length).to eq(3)
+    expect(outcome[:sankey_data][:sankey_labels].count).to eq(14)
+    expect(outcome[:sankey_data][:sankey_nodes].count).to eq(12)
+  end
+
+  it "handles a winner with multiple identical votes and provides correct sankey data" do
+    votes = [
+      %w[B C A D E],
+      %w[B C A D E],
+      %w[B C A D E],
+      %w[C A D B E],
+      %w[C A D B E],
+      %w[C A D B E],
+      %w[C A D B E],
+      %w[B D C A E],
+      %w[B D C A E],
+      %w[B D C A E],
+      %w[B D C A E],
+      %w[D C A E B],
+      %w[D C A E B],
+      %w[D C A E B],
+      %w[D C A E B],
+      %w[D C A E B],
+      %w[D C A E B],
+      %w[B E A C D],
+      %w[B E A C D],
+      %w[E A D B C],
+    ]
+    outcome = described_class.run(votes, options_5)
+
+    expect(outcome[:winning_candidate]).to eq({ digest: "D", html: "D" })
+    expect(outcome[:sankey_data][:sankey_labels].count).to eq(13)
+    expect(outcome[:sankey_data][:sankey_nodes].count).to eq(11)
   end
 end
