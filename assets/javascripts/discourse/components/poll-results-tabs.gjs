@@ -34,7 +34,9 @@ export default class TabsComponent extends Component {
 
     if (this.args.isRankedChoice) {
       tabs.push(this.tabTwo);
-      tabs.push(this.tabThree);
+      if (this.args.rankedChoiceOutcome?.round_activity?.length > 1) {
+        tabs.push(this.tabThree);
+      }
     }
     return tabs;
   }
