@@ -17,6 +17,12 @@ class DiscoursePoll::Poll
         if poll.ranked_choice?
           options = options.values.map { |hash| hash }
           options.select! { |o| available_options.include?(o[:digest]) }
+
+          if options.all? { |o| o[:rank] == "0" }
+            raise DiscoursePoll::Error.new I18n.t(
+                                             "poll.requires_that_at_least_one_option_is_ranked",
+                                           )
+          end
         else
           options.select! { |o| available_options.include?(o) }
         end
@@ -240,11 +246,11 @@ class DiscoursePoll::Poll
       SELECT poll_id, digest, rank, user_id
         FROM (
           SELECT pv.poll_id
-               , digest
-               , CASE rank WHEN 0 THEN 'Abstain' ELSE CAST(rank AS text) END AS rank
-               , user_id
-               , username
-               , ROW_NUMBER() OVER (PARTITION BY poll_option_id ORDER BY pv.created_at) AS row
+               , po.digest
+               , CASE pv.rank WHEN 0 THEN 'Abstain' ELSE CAST(pv.rank AS text) END AS rank
+               , pv.user_id
+               , u.username
+               , ROW_NUMBER() OVER (PARTITION BY pv.poll_option_id ORDER BY pv.created_at) AS row
           FROM poll_votes pv
           JOIN poll_options po ON pv.poll_id = po.poll_id AND pv.poll_option_id = po.id
           JOIN users u ON pv.user_id = u.id

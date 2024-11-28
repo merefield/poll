@@ -28,7 +28,6 @@ en:
         tabs:
           votes: "Votes"
           outcome: "Outcome"
-          sankey: "Sankey"
       multiple:
         help:
           at_least_min_options:
