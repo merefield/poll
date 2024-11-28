@@ -25,6 +25,7 @@ class DiscoursePoll::RankedChoice
         user_votes.select { |vote| vote.rank > 0 }.map { |vote| vote.poll_option.digest }
       ballot << ballot_paper
     end
+
     DiscoursePoll::RankedChoice.run(ballot, options) if ballot.length > 0
   end
 

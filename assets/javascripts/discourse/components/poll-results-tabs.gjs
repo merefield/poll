@@ -4,16 +4,16 @@ import { fn } from "@ember/helper";
 import { action } from "@ember/object";
 import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import PollResultsRankedChoice from "./poll-results-ranked-choice";
 import PollResultsStandard from "./poll-results-standard";
 import PollResultsSankey from "./poll-results-sankey";
 
 export default class TabsComponent extends Component {
   @tracked activeTab;
-  tabOne = I18n.t("poll.results.tabs.votes");
-  tabTwo = I18n.t("poll.results.tabs.outcome");
-  tabThree = I18n.t("poll.results.tabs.sankey");
+  tabOne = i18n("poll.results.tabs.votes");
+  tabTwo = i18n("poll.results.tabs.outcome");
+  tabThree = i18n("poll.results.tabs.sankey");
 
   constructor() {
     super(...arguments);
@@ -22,6 +22,7 @@ export default class TabsComponent extends Component {
         ? this.tabs[1]
         : this.tabs[0];
   }
+
   get tabs() {
     let tabs = [];
 

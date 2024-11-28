@@ -2,8 +2,8 @@ import { render } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { module, test } from "qunit";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import { count, query } from "discourse/tests/helpers/qunit-helpers";
-import I18n from "discourse-i18n";
+import { query } from "discourse/tests/helpers/qunit-helpers";
+import { i18n } from 'discourse-i18n';
 
 const RANKED_CHOICE_OUTCOME = {
   tied: false,
@@ -31,8 +31,6 @@ const RANKED_CHOICE_OUTCOME = {
   ],
 };
 
-const EMPTY_RANKED_CHOICE_OUTCOME = {};
-
 module("Poll | Component | poll-results-ranked-choice", function (hooks) {
   setupRenderingTest(hooks);
 
@@ -45,15 +43,13 @@ module("Poll | Component | poll-results-ranked-choice", function (hooks) {
       hbs`<PollResultsRankedChoice @rankedChoiceOutcome={{this.rankedChoiceOutcome}} />`
     );
 
-    assert.strictEqual(
-      count("table.poll-results-ranked-choice tr"),
-      3,
-      "there are two rounds of ranked choice"
-    );
+    assert
+      .dom("table.poll-results-ranked-choice tr")
+      .exists({ count: 3 }, "there are two rounds of ranked choice");
 
     assert.strictEqual(
       query("span.poll-results-ranked-choice-info").textContent.trim(),
-      I18n.t("poll.ranked_choice.winner", {
+      i18n("poll.ranked_choice.winner", {
         count: this.rankedChoiceOutcome.round_activity.length,
         winner: this.rankedChoiceOutcome.winning_candidate.html,
       }),
@@ -62,14 +58,17 @@ module("Poll | Component | poll-results-ranked-choice", function (hooks) {
   });
 
   test("Renders the ranked choice results component without error when outcome data is empty", async function (assert) {
-    this.setProperties({
-      rankedChoiceOutcome: EMPTY_RANKED_CHOICE_OUTCOME,
-    });
+    this.rankedChoiceOutcome = null;
 
     await render(
       hbs`<PollResultsRankedChoice @rankedChoiceOutcome={{this.rankedChoiceOutcome}} />`
     );
 
-    assert.ok(true, "No exception was thrown");
+    assert
+      .dom("table.poll-results-ranked-choice tr")
+      .exists(
+        { count: 1 },
+        "there are no rounds of ranked choice displayed, only the header"
+      );
   });
 });
