@@ -7,11 +7,13 @@ import DButton from "discourse/components/d-button";
 import { i18n } from "discourse-i18n";
 import PollResultsRankedChoice from "./poll-results-ranked-choice";
 import PollResultsStandard from "./poll-results-standard";
+import PollResultsSankey from "./poll-results-sankey";
 
 export default class TabsComponent extends Component {
   @tracked activeTab;
   tabOne = i18n("poll.results.tabs.votes");
   tabTwo = i18n("poll.results.tabs.outcome");
+  tabThree = i18n("poll.results.tabs.sankey");
 
   constructor() {
     super(...arguments);
@@ -33,6 +35,9 @@ export default class TabsComponent extends Component {
 
     if (this.args.isRankedChoice) {
       tabs.push(this.tabTwo);
+      if (this.args.rankedChoiceOutcome?.round_activity?.length > 1) {
+        tabs.push(this.tabThree);
+      }
     }
     return tabs;
   }
@@ -72,6 +77,12 @@ export default class TabsComponent extends Component {
 
         {{#if (eq this.activeTab this.tabTwo)}}
           <PollResultsRankedChoice
+            @rankedChoiceOutcome={{@rankedChoiceOutcome}}
+          />
+        {{/if}}
+
+        {{#if (eq this.activeTab this.tabThree)}}
+          <PollResultsSankey
             @rankedChoiceOutcome={{@rankedChoiceOutcome}}
           />
         {{/if}}
